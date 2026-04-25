@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>GRIP SOCIAL V7</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#e8ff47">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GRIP">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1c1c28;
+  --surface3: #22223a;
+  --accent: #e8ff47;
+  --accent2: #ff6b35;
+  --accent3: #7b61ff;
+  --text: #f0f0f0;
+  --muted: #5a5a72;
+  --border: #2a2a3a;
+  --border2: #35354a;
+  --green: #39ff8a;
+  --red: #ff4757;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ── NOISE TEXTURE ── */
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:1000;
+  opacity:0.4;
+}
+
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse at 15% 5%, rgba(123,97,255,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 95%, rgba(232,255,71,0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(18,18,28,1) 0%, var(--bg) 100%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── HEADER ── */
+header {
+  position: relative;
+  z-index: 10;
+  padding: 14px 18px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 4px;
+  color: var(--accent);
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.logo-v {
+  font-size: 13px;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  letter-spacing: 1px;
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.logo sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 2px;
+  color: var(--muted);
+  display: block;
+  margin-top: -2px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-pill {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.stat-pill:active { border-color: var(--accent); }
+
+.icon-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.icon-btn:active { transform: scale(0.93); border-color: var(--accent); }
+
+/* ── SELECTORS ── */
+.controls {
+  position: relative;
+  z-index: 10;
+  padding: 10px 16px 0;
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.select-wrap {
+  flex: 1;
+  position: relative;
+}
+
+.select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+select {
+  width: 100%;
+  padding: 9px 28px 9px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+select:focus { border-color: var(--accent); }
+
+/* ── MODE TABS ── */
+.mode-tabs {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  gap: 6px;
+  padding: 10px 16px 8px;
+  flex-shrink: 0;
+}
+
+.tab {
+  flex: 1;
+  padding: 8px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+  font-weight: 600;
+}
+.tab:active { transform: scale(0.96); }
+
+/* ── CARD ── */
+.card-wrap {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 22px 20px 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* subtle grid lines on card */
+.card::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events:none;
+  border-radius: 22px;
+}
+
+.card::before {
+  content:'';
+  position:absolute;
+  top:-50px; left:-50px;
+  width:150px; height:150px;
+  border-radius:50%;
+  background: radial-gradient(circle, rgba(232,255,71,0.07) 0%, transparent 70%);
+  pointer-events:none;
+}
+
+@keyframes cardIn {
+  from { transform: scale(0.97) translateY(6px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.card.animate {
+  animation: cardIn 0.25s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+.card-tag {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-tag::before {
+  content:'';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: inline-block;
+}
+
+.phrase-tip {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.55;
+  font-weight: 300;
+  font-style: italic;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.phrase-main {
+  font-size: 21px;
+  line-height: 1.42;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.phrase-main::-webkit-scrollbar { display: none; }
+
+/* AI badge */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  background: rgba(123,97,255,0.15);
+  border: 1px solid rgba(123,97,255,0.3);
+  color: #a08cff;
+  border-radius: 6px;
+  padding: 2px 7px;
+  margin-bottom: 10px;
+  width: fit-content;
+  text-transform: uppercase;
+}
+
+/* Loading shimmer */
+.shimmer {
+  background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 8px;
+  color: transparent;
+  user-select: none;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  flex-shrink: 0;
+}
+
+.card-context {
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--surface2);
+  border-radius: 6px;
+  padding: 3px 8px;
+  text-transform: capitalize;
+}
+
+.fav-indicator {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.3s;
+  letter-spacing: 0.5px;
+}
+.fav-indicator.visible { opacity: 1; }
+
+/* swipe hint */
+.swipe-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  opacity: 0.5;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ── ACTIONS ── */
+.actions {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px 4px;
+  flex-shrink: 0;
+}
+
+.btn {
+  flex: 1;
+  padding: 13px 0;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  letter-spacing: 0.3px;
+}
+.btn:active { transform: scale(0.95); }
+
+.btn-prev { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+.btn-next { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+.btn-like { background: rgba(57,255,138,0.1); color: var(--green); border: 1px solid rgba(57,255,138,0.2); }
+.btn-skip { background: rgba(255,71,87,0.08); color: var(--red); border: 1px solid rgba(255,71,87,0.15); }
+.btn-star { background: var(--accent); color: #000; font-weight: 700; flex: 1.4; }
+.btn-ai   { background: rgba(123,97,255,0.15); color: #a08cff; border: 1px solid rgba(123,97,255,0.3); font-weight: 600; }
+
+/* ── AI PANEL ── */
+.ai-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(10,10,15,0.92);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+.ai-panel.open { transform: translateY(0); }
+
+.ai-panel-header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ai-panel-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: #a08cff;
+}
+
+.ai-input-wrap {
+  padding: 16px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.ai-label {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+textarea {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  line-height: 1.5;
+  transition: border-color 0.2s;
+}
+textarea:focus { border-color: #7b61ff; }
+
+.quick-prompts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.qp {
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.qp:active { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+
+.ai-result {
+  background: var(--surface2);
+  border: 1px solid rgba(123,97,255,0.2);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 60px;
+  color: var(--text);
+  display: none;
+}
+
+.ai-result.visible { display: block; }
+
+.ai-actions {
+  padding: 12px 20px 20px;
+  display: flex;
+  gap: 8px;
+}
+
+/* ── FAVORITES PANEL ── */
+.fav-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.fav-panel.open { transform: translateX(0); }
+
+.fav-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.fav-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  letter-spacing: 3px;
+  color: var(--accent);
+}
+
+.fav-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fav-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  transition: border-color 0.2s;
+}
+.fav-item:active { border-color: var(--border2); }
+
+.fav-item-phrase { font-size: 15px; line-height: 1.4; }
+.fav-item-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+.fav-item-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.fav-delete {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  transition: color 0.2s;
+}
+.fav-delete:active { color: var(--red); }
+
+.fav-speak {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.fav-speak:active { border-color: var(--accent); color: var(--accent); }
+
+.fav-empty {
+  text-align: center;
+  color: var(--muted);
+  margin-top: 60px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.fav-empty span { font-size: 36px; display: block; margin-bottom: 12px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(70px);
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 500;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.accent { background: var(--accent); color: #000; border-color: var(--accent); }
+
+/* ── SPEAK BUTTON ── */
+.speak-btn {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 15px;
+  z-index: 5;
+  transition: all 0.2s;
+}
+.speak-btn:active { border-color: var(--accent); color: var(--accent); }
+.speak-btn.speaking { border-color: var(--accent); color: var(--accent); animation: pulse 1s infinite; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.bottom-pad { height: 8px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FAVORITES PANEL -->
+<div class="fav-panel" id="favPanel">
+  <div class="fav-header">
+    <div class="fav-title">⭐ SAVED PHRASES</div>
+    <button class="icon-btn" onclick="closeFavs()" style="width:auto;padding:0 14px;font-size:13px;border-radius:8px;">✕ Close</button>
+  </div>
+  <div class="fav-list" id="favList"></div>
+</div>
+
+<!-- AI PANEL -->
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-panel-header">
+    <div class="ai-panel-title">⚡ AI COACH</div>
+    <button class="icon-btn" onclick="closeAI()" style="width:auto;padding:0 14px;font-size:13px;border-radius:8px;">✕ Close</button>
+  </div>
+  <div class="ai-input-wrap">
+    <div>
+      <div class="ai-label">Describe your situation</div>
+      <textarea id="aiSituation" rows="3" placeholder="e.g. Girl at cafe reading a book alone, want a natural opener…"></textarea>
+    </div>
+    <div>
+      <div class="ai-label">Quick situations</div>
+      <div class="quick-prompts">
+        <span class="qp" onclick="setPrompt('Girl alone at cafe, reading')">📖 Cafe reader</span>
+        <span class="qp" onclick="setPrompt('Guy at gym I see often, want to be friends')">💪 Gym regular</span>
+        <span class="qp" onclick="setPrompt('Professional at networking event')">💼 Network event</span>
+        <span class="qp" onclick="setPrompt('Interesting stranger at a party')">🎉 Party stranger</span>
+        <span class="qp" onclick="setPrompt('Reconnecting with someone I lost touch with')">🔄 Reconnect</span>
+        <span class="qp" onclick="setPrompt('Someone I matched with online, first message')">📱 Online match</span>
+      </div>
+    </div>
+    <div>
+      <div class="ai-label">Tone</div>
+      <div class="quick-prompts">
+        <span class="qp" id="tone-casual" onclick="setTone('casual')">😎 Casual</span>
+        <span class="qp" id="tone-charming" onclick="setTone('charming')">✨ Charming</span>
+        <span class="qp" id="tone-bro" onclick="setTone('bro')">🤜 Bro</span>
+        <span class="qp" id="tone-pro" onclick="setTone('pro')">💼 Pro</span>
+      </div>
+    </div>
+    <div class="ai-result" id="aiResult"></div>
+  </div>
+  <div class="ai-actions">
+    <button class="btn btn-ai" style="flex:2" onclick="generateAI()">⚡ Generate</button>
+    <button class="btn btn-star" onclick="saveAIPhrase()" id="aiSaveBtn" style="display:none">⭐ Save</button>
+    <button class="icon-btn" onclick="speakAI()" id="aiSpeakBtn" style="display:none;width:46px;height:46px;border-radius:14px;">🔊</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    GRIP
+    <div>
+      <div class="logo-v">V7</div>
+    </div>
+    <div>
+      <sub>SOCIAL COACH</sub>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="stat-pill">👍 <span id="statLike">0</span></div>
+    <div class="stat-pill">⭐ <span id="statUsed">0</span></div>
+    <button class="icon-btn" onclick="openFavs()" title="Saved phrases">📂</button>
+    <button class="icon-btn" onclick="openAI()" title="AI Coach" style="border-color:rgba(123,97,255,0.4);color:#a08cff;">⚡</button>
+  </div>
+</header>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="select-wrap">
+    <select id="place" onchange="next()">
+      <option value="cafe">☕ Cafe</option>
+      <option value="street">🏙️ Street</option>
+      <option value="hotel">🏨 Hotel</option>
+      <option value="group">👥 Group</option>
+      <option value="gym">💪 Gym</option>
+      <option value="event">🎉 Event</option>
+    </select>
+  </div>
+  <div class="select-wrap">
+    <select id="intent" onchange="next()">
+      <option value="neutral">😶 Neutral</option>
+      <option value="friend">🤝 Friend</option>
+      <option value="date">❤️ Date</option>
+      <option value="bro">🤜 Bro</option>
+      <option value="network">💼 Network</option>
+    </select>
+  </div>
+</div>
+
+<!-- MODE TABS -->
+<div class="mode-tabs">
+  <button class="tab active" id="tab-opener" onclick="setMode('opener')">Opener</button>
+  <button class="tab" id="tab-follow" onclick="setMode('follow')">Follow-Up</button>
+  <button class="tab" id="tab-hook" onclick="setMode('hook')">Hook</button>
+  <button class="tab" id="tab-exit" onclick="setMode('exit')">Exit</button>
+</div>
+
+<!-- CARD -->
+<div class="card-wrap">
+  <div class="card animate" id="mainCard">
+    <div>
+      <div class="card-tag" id="cardTag">OPENER</div>
+      <div class="phrase-tip" id="memory">Loading tip...</div>
+      <div class="phrase-main" id="generated">Loading...</div>
+    </div>
+    <div class="card-footer">
+      <div class="card-context" id="cardContext">cafe · neutral</div>
+      <div class="fav-indicator" id="favIndicator">⭐ Saved!</div>
+    </div>
+    <button class="speak-btn" id="speakBtn" onclick="speakCurrent()" title="Read aloud">🔊</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="actions">
+  <button class="btn btn-prev" onclick="prev()">← Back</button>
+  <button class="btn btn-next" onclick="next()">Next →</button>
+</div>
+
+<!-- FEEDBACK -->
+<div class="actions">
+  <button class="btn btn-like" onclick="like()">✓ Good</button>
+  <button class="btn btn-skip" onclick="skip()">✕ Skip</button>
+  <button class="btn btn-star" onclick="saveFav()">⭐ Save</button>
+</div>
+
+<div class="bottom-pad"></div>
+
+<script>
+// ── DATA ──
+const phrases = {
+  opener: {
+    cafe: {
+      neutral: ["Nice vibe dito ah.", "Chill place to.", "First time mo dito?", "Busy ka ba ngayon?", "Quiet dito ah, bet."],
+      friend: ["Nag-try ka na ng menu nila?", "Lagi ka ba dito? Madalas kita nakikita.", "Okay ba wifi dito?", "Anong usually order mo?"],
+      date: ["Di ba maganda dito? Parang date spot ah.", "Good choice ng place.", "Chill dito, okay para sa usap.", "Nice corner to, lagi ka dito?"],
+      bro: ["Solid spot bro ah.", "Kape muna bago laban bro.", "Bet place to bro solid.", "Uy bro okay coffee nila."],
+      network: ["You work nearby?", "Do you usually hold meetings here?", "Good spot for focus work no?", "I keep coming back here for the vibe."]
+    },
+    street: {
+      neutral: ["Busy area today ah.", "Medyo traffic ha.", "Malapit ka lang dito?", "Nice part ng city to."],
+      friend: ["Saan ka punta?", "Kilala mo ba tong area?", "Lagi ka ba dito?", "Ano trip ngayon?"],
+      date: ["Nice area ah, dito ka lagi?", "Gusto ko tong part ng city.", "Malapit ka ba dito?", "Dito lagi? Okay taste mo."],
+      bro: ["Bro solid area to ah.", "Uy bro, tara na.", "Bro kilala mo area?", "Solid spot bro."],
+      network: ["You work around here?", "Know any good spots here?", "Are you local in this area?", "Good area for meetings no?"]
+    },
+    hotel: {
+      neutral: ["Nice property to ah.", "First time mo dito?", "Maganda service nila no?", "Okay lobby ah."],
+      friend: ["Naka-stay ka na ba dito?", "May event ka ba?", "Malapit ka ba sa hotel na to?", "Alam mo magandang kain dito?"],
+      date: ["Maganda tong hotel ah, may occasion ka?", "Di ba nice lobby?", "Okay ang ambiance dito no?", "First time mo dito? Worth it ang vibe."],
+      bro: ["Bro solid hotel to ah.", "Uy bro event ka ba?", "Solid place bro.", "Bro okay ang lounge nila."],
+      network: ["Are you here for the event?", "What brings you here?", "First time in this property?", "Are you based here or just visiting?"]
+    },
+    group: {
+      neutral: ["Barkada niyo?", "Tagal na kayong magkakilala?", "May okasyon?", "Solid energy ng grupo niyo."],
+      friend: ["Saan kayo usually nag-tambay?", "Anong grupo to ah?", "Okay yata trip niyo?", "Palagi kayong magkasama?"],
+      date: ["Kasama mo mga friends mo? Ang saya.", "Nice energy ng grupo niyo.", "Barkada niyo? Malapit kayo?", "Solid group niyo ah."],
+      bro: ["Bro, solid squad niyo ah.", "Lagi ba kayong mag-grupo?", "Uy bro, ang dami ninyo.", "Solid ang barkada mo bro."],
+      network: ["Are you all from the same company?", "Do you all work together?", "What brought the group together?", "Quite a team you have here."]
+    },
+    gym: {
+      neutral: ["Lagi ka ba dito?", "Matagal ka nang nag-gym dito?", "Okay equipment nila no?", "Solid setup ng gym nila."],
+      friend: ["Sino trainer mo?", "Anong program mo?", "Taga-dito ka rin ba?", "Okay progress mo ah."],
+      date: ["Consistent ka ah, lagi kita nakikita dito.", "Anong workout mo ngayon?", "Solid progress mo ah.", "Lagi ka ba umaga?"],
+      bro: ["Bro, solid gains.", "Anong program mo bro?", "Bro anong split mo?", "Bro parang lagi mo kami naabot dito."],
+      network: ["Are you a trainer here?", "What program are you running?", "How long have you been training here?", "Do you coach people here?"]
+    },
+    event: {
+      neutral: ["First time mo sa event na to?", "Kilala mo organizer?", "Okay turnout ah.", "Maganda setup ah."],
+      friend: ["Sino invite sa iyo?", "Okay ang event no?", "Kilala mo ba ibang tao dito?", "Kamusta meron ka dito?"],
+      date: ["Di ba maganda event na to? Glad ka na nandito ka?", "Sino kasama mo?", "Ang daming tao pero nakita kita.", "Nice na event to, first time mo ba?"],
+      bro: ["Bro solid event to.", "Uy bro tara libre food.", "Solid lineup bro ah.", "Bro okay ba to?"],
+      network: ["What industry are you in?", "Did you know many people here?", "What brought you to this event?", "Are you speaking here or just attending?"]
+    }
+  },
+  follow: {
+    neutral: ["Dito ka lagi?", "Anong work mo?", "Kumain ka na ba?", "Matagal ka pa ba dito?", "Anong trip usually?"],
+    friend: ["Anong pinaka-favorite mo dito?", "Sino kasama mo today?", "Plano mo pa ba ulit?", "Anong usually ginagawa mo after?"],
+    date: ["Anong pinaka-bet mo sa lugar na to?", "Ano ka ginagawa mo free time?", "Chill ka ah, I like that.", "Lagi ka ba ganito?", "Gusto mo ba tong kind of place?"],
+    bro: ["Bro anong crack?", "Anong balak mo after?", "Bro sama ka sa susunod.", "Bro anong pinaka-bet mong spot dito?"],
+    network: ["What do you do for work?", "Are you based here?", "What are you working on lately?", "How long have you been in the industry?"]
+  },
+  hook: {
+    neutral: ["Weird question pero — ano pinaka-random skill mo?", "If you weren't here, where would you be right now?", "Best advice you ever ignored?", "Anong pinaka-underrated na lugar dito?"],
+    friend: ["Anong pinaka-memorable na trip mo?", "Kung malaya ka bukas, ano gagawin mo?", "Anong show pinapanood mo ngayon?", "Anong pinaka-dumb na desisyon mo na hindi ka nagsisi?"],
+    date: ["What's something people always get wrong about you?", "Anong pinaka-underrated na bagay sa buhay mo?", "If you could only eat one food forever, what would it be?", "What's the most spontaneous thing you've done?"],
+    bro: ["Bro kung walang pera limitasyon, ano gagawin mo?", "Anong pinaka-dumb risk na ginawa mo na nag-work?", "Bro kung may superpower ka, ano?", "Bro anong pinaka-memorable na trip mo?"],
+    network: ["What's the best business advice you've gotten?", "What are you learning right now?", "What's a problem in your industry nobody talks about?", "What would you do differently if you started over?"]
+  },
+  exit: {
+    neutral: ["Enjoy your time.", "Nice talking.", "See you around.", "Take care ha."],
+    friend: ["Ayos, let's hang again soon.", "Add mo ko sa socials.", "Nice ka pala, saan ka usually?", "Sige, in touch tayo."],
+    date: ["Nice talking to you, really.", "Sana ulit tayo mag-usap.", "Take care ha? Ikaw ang mag-message.", "Solid, hope I see you again."],
+    bro: ["Bro solid ka, sige laban.", "Uy bro, next time sama ka.", "Bro take care, in touch tayo.", "Bro solid, see you around."],
+    network: ["Let's connect on LinkedIn.", "I'll send you a message.", "Nice to meet you, let's keep in touch.", "I'll follow up — great to connect."]
+  }
+};
+
+const tips = {
+  opener: ["Observe first, speak second.", "Match their energy, not your nervousness.", "Short is sharp — one line beats a monologue.", "Ask, don't perform. Genuine > Clever.", "Pause after they answer. Don't rush to fill silence."],
+  follow: ["Build on what they said, not what you planned.", "Good questions create momentum.", "Lean in slightly — show you're listening.", "Echo their keywords back to them.", "Less talking, more letting them talk."],
+  hook: ["Unexpected questions break autopilot.", "Smile before the question lands.", "Wait. Their pause is them thinking — a good sign.", "Vulnerability in your question earns vulnerability back.", "Be genuinely curious — they'll feel it."],
+  exit: ["Leave before it gets awkward.", "End on a high, not a fade.", "Warm exits set up warm returns.", "Smile as you go. That's what they'll remember.", "Always leave them wanting more conversation."]
+};
+
+// ── STATE ──
+let mode = "opener";
+let history = [];
+let historyIndex = -1;
+let stats = JSON.parse(localStorage.getItem("gripStats_v7")) || { like:0, skip:0, used:0 };
+let favorites = JSON.parse(localStorage.getItem("gripFavs_v7")) || [];
+let aiTone = "casual";
+let lastAIPhrase = "";
+let speaking = false;
+
+// ── PHRASE LOGIC ──
+function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function getPhrase(m, place, intent) {
+  if (m === "opener") {
+    let pool = phrases.opener[place]?.[intent] || phrases.opener[place]?.neutral || [];
+    return pool[Math.floor(Math.random() * pool.length)] || "Nice one ah.";
+  }
+  let pool = phrases[m]?.[intent] || phrases[m]?.neutral || [];
+  return pool[Math.floor(Math.random() * pool.length)] || "...";
+}
+
+function getTip(m) { return rand(tips[m] || tips.opener); }
+
+function buildCard() {
+  let place = document.getElementById("place").value;
+  let intent = document.getElementById("intent").value;
+  let phrase = getPhrase(mode, place, intent);
+  let tip = getTip(mode);
+  return { phrase, tip, mode, place, intent };
+}
+
+function renderCard(card, animate = true) {
+  document.getElementById("cardTag").innerText = card.mode.toUpperCase();
+  document.getElementById("memory").innerText = card.tip;
+  document.getElementById("generated").innerText = card.phrase;
+  document.getElementById("cardContext").innerText = `${card.place} · ${card.intent}`;
+  document.getElementById("favIndicator").classList.remove("visible");
+
+  if (animate) {
+    let el = document.getElementById("mainCard");
+    el.classList.remove("animate");
+    void el.offsetWidth;
+    el.classList.add("animate");
+  }
+
+  stopSpeaking();
+}
+
+function next() {
+  if (historyIndex < history.length - 1) history = history.slice(0, historyIndex + 1);
+  let card = buildCard();
+  history.push(card);
+  historyIndex = history.length - 1;
+  renderCard(card);
+}
+
+function prev() {
+  if (historyIndex > 0) {
+    historyIndex--;
+    renderCard(history[historyIndex]);
+  } else {
+    showToast("Start of history");
+  }
+}
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.getElementById("tab-" + m).classList.add("active");
+  next();
+}
+
+// ── STATS ──
+function updateStats() {
+  document.getElementById("statLike").innerText = stats.like;
+  document.getElementById("statUsed").innerText = stats.used;
+}
+
+function like() {
+  stats.like++;
+  localStorage.setItem("gripStats_v7", JSON.stringify(stats));
+  updateStats();
+  showToast("✓ Good one — noted!", false);
+  next();
+}
+
+function skip() {
+  stats.skip++;
+  localStorage.setItem("gripStats_v7", JSON.stringify(stats));
+  next();
+}
+
+// ── FAVORITES ──
+function saveFav() {
+  if (historyIndex < 0) return;
+  let card = history[historyIndex];
+  if (favorites.find(f => f.phrase === card.phrase)) { showToast("Already saved!"); return; }
+  stats.used++;
+  favorites.push({ ...card, savedAt: Date.now() });
+  localStorage.setItem("gripFavs_v7", JSON.stringify(favorites));
+  localStorage.setItem("gripStats_v7", JSON.stringify(stats));
+  updateStats();
+  document.getElementById("favIndicator").classList.add("visible");
+  showToast("⭐ Saved!", true);
+}
+
+function openFavs() { renderFavList(); document.getElementById("favPanel").classList.add("open"); }
+function closeFavs() { document.getElementById("favPanel").classList.remove("open"); }
+
+function renderFavList() {
+  let list = document.getElementById("favList");
+  if (favorites.length === 0) {
+    list.innerHTML = `<div class="fav-empty"><span>⭐</span>No saved phrases yet.<br>Tap Save on a card you like.</div>`;
+    return;
+  }
+  list.innerHTML = favorites.slice().reverse().map((f, ri) => {
+    let i = favorites.length - 1 - ri;
+    return `<div class="fav-item">
+      <div style="flex:1">
+        <div class="fav-item-phrase">${f.phrase}</div>
+        <div class="fav-item-meta">${f.mode} · ${f.place} · ${f.intent}</div>
+      </div>
+      <div class="fav-item-actions">
+        <button class="fav-speak" onclick="speakText('${f.phrase.replace(/'/g,"\\'")}')">🔊</button>
+        <button class="fav-delete" onclick="deleteFav(${i})">🗑</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function deleteFav(i) {
+  favorites.splice(i, 1);
+  localStorage.setItem("gripFavs_v7", JSON.stringify(favorites));
+  updateStats();
+  renderFavList();
+}
+
+// ── SPEECH ──
+function speakText(text) {
+  if (!window.speechSynthesis) { showToast("TTS not supported"); return; }
+  window.speechSynthesis.cancel();
+  let u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.92;
+  u.pitch = 1.05;
+  window.speechSynthesis.speak(u);
+}
+
+function speakCurrent() {
+  let text = document.getElementById("generated").innerText;
+  if (!text || text === "Loading...") return;
+  let btn = document.getElementById("speakBtn");
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    btn.classList.remove("speaking");
+    return;
+  }
+  btn.classList.add("speaking");
+  let u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.92;
+  u.pitch = 1.05;
+  u.onend = () => btn.classList.remove("speaking");
+  window.speechSynthesis.speak(u);
+}
+
+function speakAI() {
+  if (lastAIPhrase) speakText(lastAIPhrase);
+}
+
+function stopSpeaking() {
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  let btn = document.getElementById("speakBtn");
+  if (btn) btn.classList.remove("speaking");
+}
+
+// ── AI PANEL ──
+function openAI() { document.getElementById("aiPanel").classList.add("open"); }
+function closeAI() { document.getElementById("aiPanel").classList.remove("open"); }
+
+function setPrompt(text) {
+  document.getElementById("aiSituation").value = text;
+}
+
+function setTone(t) {
+  aiTone = t;
+  document.querySelectorAll(".qp[id^='tone-']").forEach(el => {
+    el.style.background = "";
+    el.style.color = "";
+    el.style.borderColor = "";
+  });
+  let el = document.getElementById("tone-" + t);
+  if (el) {
+    el.style.background = "var(--surface2)";
+    el.style.color = "var(--text)";
+    el.style.borderColor = "var(--border2)";
+  }
+}
+
+async function generateAI() {
+  let situation = document.getElementById("aiSituation").value.trim();
+  if (!situation) { showToast("Describe your situation first"); return; }
+
+  let place = document.getElementById("place").value;
+  let intent = document.getElementById("intent").value;
+
+  let result = document.getElementById("aiResult");
+  result.className = "ai-result visible shimmer";
+  result.innerText = "Generating...";
+  document.getElementById("aiSaveBtn").style.display = "none";
+  document.getElementById("aiSpeakBtn").style.display = "none";
+
+  const prompt = `You are GRIP Social Coach — an expert conversation starter coach for Filipino social contexts. 
+Generate 3 natural, authentic conversation openers for this situation.
+
+Situation: ${situation}
+Location context: ${place}
+Relationship intent: ${intent}
+Tone: ${aiTone}
+
+Rules:
+- Mix Tagalog/Taglish and English naturally (like how Filipinos actually talk)
+- Keep each opener SHORT — 1–2 sentences max
+- Sound human and relaxed, not scripted
+- Match the tone: ${aiTone}
+- Number them 1. 2. 3.
+- NO preamble, just the 3 lines directly`;
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 300,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await res.json();
+    let text = data.content?.[0]?.text || "Could not generate. Try again.";
+    lastAIPhrase = text;
+    result.className = "ai-result visible";
+    result.innerText = text;
+    document.getElementById("aiSaveBtn").style.display = "flex";
+    document.getElementById("aiSpeakBtn").style.display = "flex";
+  } catch (e) {
+    result.className = "ai-result visible";
+    result.innerText = "⚠️ Could not reach AI. Check your connection.";
+  }
+}
+
+function saveAIPhrase() {
+  if (!lastAIPhrase) return;
+  let place = document.getElementById("place").value;
+  let intent = document.getElementById("intent").value;
+  let already = favorites.find(f => f.phrase === lastAIPhrase);
+  if (already) { showToast("Already saved!"); return; }
+  favorites.push({ phrase: lastAIPhrase, mode: "ai", place, intent, savedAt: Date.now() });
+  localStorage.setItem("gripFavs_v7", JSON.stringify(favorites));
+  stats.used++;
+  localStorage.setItem("gripStats_v7", JSON.stringify(stats));
+  updateStats();
+  showToast("⭐ AI phrase saved!", true);
+}
+
+// ── TOAST ──
+let toastTimer;
+function showToast(msg, accent = false) {
+  let t = document.getElementById("toast");
+  t.innerText = msg;
+  t.className = "toast show" + (accent ? " accent" : "");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2000);
+}
+
+// ── SWIPE ──
+let tx = 0, ty = 0;
+let card = document.getElementById("mainCard");
+card.addEventListener("touchstart", e => {
+  tx = e.touches[0].clientX;
+  ty = e.touches[0].clientY;
+}, { passive: true });
+
+card.addEventListener("touchend", e => {
+  let dx = e.changedTouches[0].clientX - tx;
+  let dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > Math.abs(dy) + 10) {
+    if (dx < -50) next();
+    else if (dx > 50) prev();
+  }
+}, { passive: true });
+
+// ── KEYBOARD ──
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT") return;
+  if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); next(); }
+  if (e.key === "ArrowLeft") prev();
+  if (e.key === "s") saveFav();
+  if (e.key === "l") like();
+});
+
+// ── INIT ──
+setTone("casual");
+updateStats();
+next();
+
+// ── SERVICE WORKER ──
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js")
+      .then(r => console.log("SW:", r.scope))
+      .catch(e => console.log("SW err:", e));
+  });
+}
+</script>
+</body>
+</html>
