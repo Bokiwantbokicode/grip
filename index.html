@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="manifest" href="manifest.json">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GRIP SOCIAL V6</title>
+<style>
+body{margin:0;font-family:Arial;background:#0f0f0f;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh}
+#app{width:100%;max-width:460px;height:100vh;display:flex;flex-direction:column}
+header{padding:12px;text-align:center;font-weight:bold;letter-spacing:2px}
+.card{flex:1;margin:10px;padding:20px;border-radius:18px;background:#1c1c1c;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.phrase{margin:10px 0;font-size:17px}
+small{opacity:.6}
+.meta{font-size:12px;opacity:.6;margin-bottom:8px}
+.controls{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:10px}
+button{padding:10px;border:none;border-radius:10px;background:#2a2a2a;color:#fff;flex:1;min-width:90px}
+button:active{transform:scale(.95)}
+</style>
+</head>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js');
+}
+</script>
+<body>
+<div id="app">
+<header>GRIP SOCIAL V6</header>
+
+<div class="card" id="card">
+<div class="meta" id="mode">OPENER</div>
+<div class="phrase" id="mainPhrase"></div>
+<small>Main</small>
+<div class="phrase" id="suggest1"></div>
+<small>Next</small>
+<div class="phrase" id="suggest2"></div>
+<small>Exit</small>
+</div>
+
+<div class="controls">
+<button onclick="setMode('opener')">Opener</button>
+<button onclick="setMode('follow')">Follow</button>
+<button onclick="setMode('hook')">Hook</button>
+<button onclick="setMode('exit')">Exit</button>
+</div>
+
+<div class="controls">
+<button onclick="nextCard()">Next</button>
+<button onclick="savePhrase()">Save ⭐</button>
+</div>
+
+</div>
+
+<script>
+let mode='opener';
+let historyStack=[];
+
+// COMPONENT BANKS
+const observe=[
+"Busy today","Chill place","Parang okay dito","Sakto lang crowd"
+];
+
+const context=[
+"first time ko here","lagi ka ba dito","napadaan lang ako","trying this place"
+];
+
+const followUps=[
+"Ano usually order mo?","Dito ka lagi?","Ano ginagawa mo after?","Anong marerecommend mo?"
+];
+
+const hooks=[
+"Mas gusto mo ba tahimik or maingay?","Solo or may kasama usually?","Ano ginagawa mo pag relax?"
+];
+
+const exits=[
+"Nice talking to you","Enjoy your time","Catch you around","Ingat"
+];
+
+// USER MEMORY
+let saved = JSON.parse(localStorage.getItem('saved')||'[]');
+
+function rand(arr){return arr[Math.floor(Math.random()*arr.length)];}
+
+function smartCombine(){
+let base = rand(observe) + ", " + rand(context);
+
+// adapt to saved memory
+if(saved.length>3 && Math.random()>0.5){
+  base = saved[Math.floor(Math.random()*saved.length)];
+}
+
+return base;
+}
+
+function generate(){
+let main, next, exit;
+
+if(mode==='opener'){
+  main = smartCombine();
+  next = rand(followUps);
+  exit = rand(exits);
+}
+else if(mode==='follow'){
+  main = rand(followUps);
+  next = '';
+  exit = rand(exits);
+}
+else if(mode==='hook'){
+  main = rand(hooks);
+  next = '';
+  exit = rand(exits);
+}
+else{
+  main = rand(exits);
+  next = '';
+  exit = '';
+}
+
+// slight variation engine
+if(Math.random()>0.7){ main += " ah"; }
+if(Math.random()>0.8){ main += " no"; }
+
+
+document.getElementById('mainPhrase').innerText = main;
+document.getElementById('suggest1').innerText = next;
+document.getElementById('suggest2').innerText = exit;
+}
+
+function setMode(m){mode=m;document.getElementById('mode').innerText=m.toUpperCase();generate();}
+
+function nextCard(){
+historyStack.push({
+main:document.getElementById('mainPhrase').innerText,
+next:document.getElementById('suggest1').innerText,
+exit:document.getElementById('suggest2').innerText
+});
+generate();
+}
+
+function savePhrase(){
+saved.push(document.getElementById('mainPhrase').innerText);
+localStorage.setItem('saved',JSON.stringify(saved));
+alert('Saved to memory');
+}
+
+// SWIPE
+let startX=0;
+let card=document.getElementById('card');
+card.addEventListener('touchstart',e=>startX=e.touches[0].clientX);
+card.addEventListener('touchend',e=>{
+let endX=e.changedTouches[0].clientX;
+if(endX-startX>60){
+  if(historyStack.length>0){
+    let prev=historyStack.pop();
+    document.getElementById('mainPhrase').innerText=prev.main;
+    document.getElementById('suggest1').innerText=prev.next;
+    document.getElementById('suggest2').innerText=prev.exit;
+  }
+}
+else if(startX-endX>60){
+  nextCard();
+}
+});
+
+setMode('opener');
+</script>
+</body>
+</html>
