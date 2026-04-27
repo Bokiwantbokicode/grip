@@ -1,10 +1,10 @@
-const CACHE_NAME = 'grip-social-v8';
+const CACHE_NAME = 'grip-social-v9';
 
 const ASSETS = [
   './',
-'./index.html',
-'./manifest.json',
-'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap'
+  './index.html',
+  './manifest.json',
+  'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap'
 ];
 
 self.addEventListener('install', e => {
@@ -17,7 +17,7 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
     )
   );
   self.clients.claim();
